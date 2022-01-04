@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    用户名
+                </th>
+                <th>
+                    密码
+                </th>
+                <th>
+                    操作
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <% users.forEach(function(user){ %>
+                    <tr>
+                        <td>
+                            <span style="display: block;"><%= user.name %></span>
+                            <input type="text" name="name" style="display: none;" value="<%= user.name %>">
+                        </td> 
+                        <td><%= user.password %><input type="text" name="password" value="<%= user.password %>"></td> 
+                        <td style="display: none;"><%= user.id %></td> 
+                        <td>
+                            <button class="removeData">删除</button> 
+                            <button class="updataData">修改</button>
+                        </td> 
+                    </tr>
+                  <% }); %>
+            </tr>
+            
+        </tbody>
+    </table>
+    <!-- <ul>
+        <% users.forEach(function(user){ %>
+          <li> <%= user.name %></li> 
+        <% }); %>
+      </ul> -->
+  </body>
+  <script>
+    // 执行删除
+     let removeData = document.getElementsByClassName('removeData')
+     console.log(removeData, 'remove')
+     for (let index = 0; index < removeData.length; index++) {
+        const element = removeData[index];
+        let parentElement = element.parentNode
+        let text = parentElement.nextElementSibling||parentElement.nextSibling
+         element.addEventListener('click', () => {
+            console.log('执行删除操作')
+            axios.post('/deleteUser', {
+                // name: text.parentElement.children[0].innerText,
+                id: text.parentElement.children[2].innerText
+            })
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+
+        })
+     }
+    //  执行修改
+     let updataData = document.getElementsByClassName('updataData')
+     for (let index = 0; index < updataData.length; index++) {
+         const element = updataData[index];
+        let parentElement = element.parentNode
+        let text = parentElement.nextElementSibling||parentElement.nextSibling
+        console.log(text.parentElement.children[0].lastChild, '11')
+        console.log(text.parentElement.children[1].lastChild, '22')
+         element.addEventListener('click', () => {
+            console.log('执行修改操作')
+            axios.post('/updateUser', {
+                name: text.parentElement.children[0].lastChild.value,
+                password: text.parentElement.children[1].lastChild.value,
+                id: text.parentElement.children[2].innerText
+            })
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        })
+     }
+  </script>
+</html>
