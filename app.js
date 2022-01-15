@@ -6,6 +6,7 @@ var logger = require('morgan');
 
 var usersRouter = require('./routes/users');
 var formPage = require('./routes/formPage');
+var login = require('./routes/login');
 
 var fs = require('fs');
 var app = express();
@@ -22,11 +23,38 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', formPage);
+app.use('/', login);
 app.use('/users', usersRouter);
 app.use('/formPage', formPage);
 
-
+// 用户登录
+app.post('/login', function (req, res) {
+    debugger
+    var response = {
+        "name":req.body.name,
+        "password":req.body.password,
+    };
+    console.log(response, ';response')
+    fs.readFile(__dirname + '/users.json', 'utf8', function (err, data) {
+        if(!err){
+            let flag = false
+            let obj = JSON.parse(data)
+            obj.map(ele => {
+                if (ele.name===response.name&&ele.password===response.password){
+                    flag = true
+                }
+            })
+            console.log(flag, 'flage')
+            if(flag){
+                res.end(JSON.stringify( '成功！' ));
+            }else{
+                res.render('error', status);
+            }
+        }else{
+            throw err;
+        }
+    })
+})
 // 查询用户列表
 app.get('/userList', function (req, res) {
     fs.readFile(__dirname + '/users.json', 'utf8', function (err, data) {
